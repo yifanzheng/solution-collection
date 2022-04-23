@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <jetcd.version>0.6.0</jetcd.version>
+        <jetcd.version>0.3.0</jetcd.version>
     </properties>
 
     <dependencies>
@@ -37,6 +37,11 @@
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
             <version>${jetcd.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
     </dependencies>
