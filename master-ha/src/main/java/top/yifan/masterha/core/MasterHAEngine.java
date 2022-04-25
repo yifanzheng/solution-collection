@@ -91,18 +91,23 @@ public class MasterHAEngine implements CommandLineRunner, DisposableBean {
         keepAliveClient = lease.keepAlive(leaseId, new StreamObserver<LeaseKeepAliveResponse>() {
             @Override
             public void onNext(LeaseKeepAliveResponse value) {
+                // 确定下一次租约续约时间后触发
                 System.err.println("LeaseKeepAliveResponse value:" + value.getTTL());
             }
 
             @Override
             public void onError(Throwable t) {
+                // 续约异常时触发
                 toStandby();
                 tryToBeMasterAsync();
             }
 
             @Override
             public void onCompleted() {
-
+                // 租约过期后触发
+                // 在租约过期后，重新注册节点信息，目的是为了防止续约超时问题
+                toStandby();
+                tryToBeMasterAsync();
             }
         });
         // 进行租约锁定
