@@ -6,5 +6,5 @@ package top.yifan.masterha.core;
  * @author star
  */
 public enum HAState {
-    STANDBY, ACTIVE
+    STANDBY, ACTIVE;
 }

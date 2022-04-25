@@ -1,12 +1,18 @@
 package top.yifan.masterha;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
+import top.yifan.masterha.node.NodeMode;
+import top.yifan.masterha.node.MasterNodeHelper;
+import top.yifan.masterha.node.MasterNodeSummary;
+import top.yifan.masterha.node.NodeState;
 
 import java.net.InetAddress;
+import java.time.Instant;
 
 @SpringBootApplication
 public class MasterApplication {
@@ -41,12 +47,25 @@ public class MasterApplication {
                 port,
                 env.getActiveProfiles());
 
-        initializeNodeSummary(protocol, hostAddress, port);
+        initializeNodeSummary(env, protocol, hostAddress);
     }
 
-    private static void initializeNodeSummary(String protocol, String hostAddress, String port) {
-
-
+    private static void initializeNodeSummary(Environment env, String protocol, String hostAddress) {
+        String endpoint = env.getProperty("server.endpoint");
+        if (StringUtils.isBlank(endpoint)) {
+            endpoint = String.format("%s://%s:%s", protocol, hostAddress, env.getProperty("server.port"));
+        } else {
+            endpoint = String.format("%s://%s", protocol, endpoint);
+        }
+        String nodeMode = env.getProperty("server.mode");
+        // 初始化节点信息
+        MasterNodeSummary nodeSummary = MasterNodeHelper.getNodeSummary();
+        nodeSummary.setState(NodeState.UP);
+        nodeSummary.setStartTime(Instant.now());
+        nodeSummary.setEndpoint(endpoint);
+        if (StringUtils.isNotBlank(nodeMode)) {
+            nodeSummary.setMode(NodeMode.valueOf(nodeMode.toUpperCase()));
+        }
     }
 
 }
